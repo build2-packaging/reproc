@@ -1,7 +1,9 @@
-# libreproc - - [What is reproc?](#what-is-reproc)
+# libreproc - Cross-platform C99 process library
 
-This is a `build2` package for the [`<UPSTREAM-NAME>`](https://<UPSTREAM-URL>)
-C library. It provides <SUMMARY-OF-FUNCTIONALITY>.
+This is a `build2` package for the
+[`reproc`](https://github.com/DaanDeMeyer/reproc) C99 library. It provides a
+cross-platform API for starting, stopping, and communicating with external
+programs.
 
 
 ## Usage
@@ -10,13 +12,13 @@ To start using `libreproc` in your project, add the following `depends`
 value to your `manifest`, adjusting the version constraint as appropriate:
 
 ```
-depends: libreproc ^<VERSION>
+depends: libreproc ^14.2.7
 ```
 
 Then import the library in your `buildfile`:
 
 ```
-import libs = libreproc%lib{<TARGET>}
+import libs = libreproc%lib{reproc}
 ```
 
 
@@ -25,10 +27,10 @@ import libs = libreproc%lib{<TARGET>}
 This package provides the following importable targets:
 
 ```
-lib{<TARGET>}
+lib{reproc}
 ```
 
-<DESCRIPTION-OF-IMPORTABLE-TARGETS>
+The C99 process library.
 
 
 ## Configuration variables
@@ -36,7 +38,9 @@ lib{<TARGET>}
 This package provides the following configuration variables:
 
 ```
-[bool] config.libreproc.<VARIABLE> ?= false
+[bool] config.libreproc.multithreaded ?= true
 ```
 
-<DESCRIPTION-OF-CONFIG-VARIABLES>
+When true (the default, matching upstream `REPROC_MULTITHREADED`), the library
+uses `pthread_sigmask` and links the system thread library on POSIX. When
+false, it uses `sigprocmask` instead and does not link `-pthread`.
