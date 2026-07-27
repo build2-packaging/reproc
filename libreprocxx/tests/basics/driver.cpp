@@ -1,34 +1,25 @@
-#include <sstream>
-#include <stdexcept>
-
-#include <reproc++/reprocxx.hpp>
+#include <reproc++/run.hpp>
 
 #undef NDEBUG
 #include <cassert>
 
 int main ()
 {
-  using namespace std;
-  using namespace reprocxx;
+  // Call a non-inline API so shared library symbol export is exercised.
+  const char *argv[] = {
+#ifdef _WIN32
+    "cmd", "/c", "echo", "hello",
+#else
+    "echo", "hello",
+#endif
+    nullptr
+  };
 
-  // Basics.
-  //
-  {
-    ostringstream o;
-    say_hello (o, "World");
-    assert (o.str () == "Hello, World!\n");
-  }
+  int status = -1;
+  std::error_code ec;
+  std::tie (status, ec) = reproc::run (argv);
 
-  // Empty name.
-  //
-  try
-  {
-    ostringstream o;
-    say_hello (o, "");
-    assert (false);
-  }
-  catch (const invalid_argument& e)
-  {
-    assert (e.what () == string ("empty name"));
-  }
+  assert (!ec);
+  assert (status >= 0);
+  return 0;
 }
