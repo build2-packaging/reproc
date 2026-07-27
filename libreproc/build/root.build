@@ -7,6 +7,11 @@ using c
 h{*}: extension = h
 c{*}: extension = c
 
+# Use pthread_sigmask and link against the system's thread library
+# (upstream REPROC_MULTITHREADED, default ON).
+#
+config [bool] config.libreproc.multithreaded ?= true
+
 # The test target for cross-testing (running tests under Wine, etc).
 #
 test.target = $c.target

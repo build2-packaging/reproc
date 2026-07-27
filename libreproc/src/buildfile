@@ -14,7 +14,15 @@ lib{reproc}: $pub/{$pub_hdrs}
 
 # Private headers and sources as well as dependencies.
 #
-lib{reproc}: {h c}{**} $impl_libs $intf_libs
+# Multi-dot names (clock.posix.c) need the ... form so build2 does not treat
+# .posix as the file extension.
+#
+lib{reproc}: reproc/{h c}{** -*.windows... -*.posix...} $impl_libs $intf_libs
+
+# Platform-specific sources.
+#
+lib{reproc}: reproc/c{*.windows...}: include = ($c.target.class == 'windows')
+lib{reproc}: reproc/c{*.posix...}:   include = ($c.target.class != 'windows')
 
 # Build options.
 #
@@ -26,8 +34,41 @@ src_pfx_src = [dir_path] $src_root/src/
 c.poptions =+ "-I$out_pfx_src" "-I$src_pfx_src" \
               "-I$out_pfx_inc" "-I$src_pfx_inc"
 
-#obja{*}: c.poptions += -DREPROC_STATIC_BUILD
-#objs{*}: c.poptions += -DREPROC_SHARED_BUILD
+if $config.libreproc.multithreaded
+  c.poptions += -DREPROC_MULTITHREADED
+
+if ($c.target.class == 'windows')
+  c.poptions += -DWIN32_LEAN_AND_MEAN
+
+if ($c.target.system == 'win32-msvc')
+  c.poptions += -D_CRT_SECURE_NO_WARNINGS
+
+objs{*}: c.poptions += -DREPROC_BUILDING -DREPROC_SHARED
+
+# Upstream: C_VISIBILITY_PRESET hidden for shared builds.
+#
+if ($c.class != 'msvc')
+  objs{*}: c.coptions += -fvisibility=hidden
+
+# System libraries.
+#
+if ($c.target.class == 'windows')
+{
+  if ($c.target.system == 'mingw32')
+    c.libs += -lws2_32
+  else
+    c.libs += ws2_32.lib
+}
+else
+{
+  if $config.libreproc.multithreaded
+    c.libs += -pthread
+
+  # clock_gettime
+  #
+  if ($c.target.class == 'linux')
+    c.libs += -lrt
+}
 
 # Export options.
 #
@@ -37,8 +78,7 @@ lib{reproc}:
   c.export.libs = $intf_libs
 }
 
-#liba{reproc}: c.export.poptions += -DREPROC_STATIC
-#libs{reproc}: c.export.poptions += -DREPROC_SHARED
+libs{reproc}: c.export.poptions += -DREPROC_SHARED
 
 # For pre-releases use the complete version to make sure they cannot
 # be used in place of another pre-release or the final version. See
