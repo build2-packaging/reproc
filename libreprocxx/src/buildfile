@@ -1,6 +1,6 @@
 intf_libs = # Interface dependencies.
 impl_libs = # Implementation dependencies.
-#import xxxx_libs += libhello%lib{hello}
+import impl_libs += libreproc%lib{reproc}
 
 # Public headers.
 #
@@ -10,11 +10,11 @@ include $pub
 
 pub_hdrs = $($pub/ pub_hdrs)
 
-lib{reprocxx}: $pub/{$pub_hdrs}
+lib{reproc++}: $pub/{$pub_hdrs}
 
 # Private headers and sources as well as dependencies.
 #
-lib{reprocxx}: {hxx ixx txx cxx}{**} $impl_libs $intf_libs
+lib{reproc++}: {hxx ixx txx cxx}{**} $impl_libs $intf_libs
 
 # Build options.
 #
@@ -26,28 +26,40 @@ src_pfx_src = [dir_path] $src_root/src/
 cxx.poptions =+ "-I$out_pfx_src" "-I$src_pfx_src" \
                 "-I$out_pfx_inc" "-I$src_pfx_inc"
 
-#obja{*}: cxx.poptions += -DREPROC___STATIC_BUILD
-#objs{*}: cxx.poptions += -DREPROC___SHARED_BUILD
+objs{*}: cxx.poptions += -DREPROCXX_BUILDING -DREPROCXX_SHARED
+
+# Upstream: CXX_VISIBILITY_PRESET hidden and VISIBILITY_INLINES_HIDDEN
+# for shared builds.
+#
+if ($cxx.class != 'msvc')
+  objs{*}: cxx.coptions += -fvisibility=hidden -fvisibility-inlines-hidden
+
+# Public drain.hpp uses std::mutex (sink::thread_safe).
+#
+if ($cxx.target.system != 'win32-msvc')
+  cxx.libs += -pthread
 
 # Export options.
 #
-lib{reprocxx}:
+lib{reproc++}:
 {
   cxx.export.poptions = "-I$out_pfx_inc" "-I$src_pfx_inc"
   cxx.export.libs = $intf_libs
 }
 
-#liba{reprocxx}: cxx.export.poptions += -DREPROC___STATIC
-#libs{reprocxx}: cxx.export.poptions += -DREPROC___SHARED
+libs{reproc++}: cxx.export.poptions += -DREPROCXX_SHARED
+
+if ($cxx.target.system != 'win32-msvc')
+  lib{reproc++}: cxx.export.libs += -pthread
 
 # For pre-releases use the complete version to make sure they cannot
 # be used in place of another pre-release or the final version. See
 # the version module for details on the version.* variable values.
 #
 if $version.pre_release
-  lib{reprocxx}: bin.lib.version = "-$version.project_id"
+  lib{reproc++}: bin.lib.version = "-$version.project_id"
 else
-  lib{reprocxx}: bin.lib.version = "-$version.major.$version.minor"
+  lib{reproc++}: bin.lib.version = "-$version.major.$version.minor"
 
 # Don't install private headers.
 #

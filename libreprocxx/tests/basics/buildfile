@@ -1,3 +1,3 @@
-import libs = libreprocxx%lib{reprocxx}
+import libs = libreprocxx%lib{reproc++}
 
 exe{driver}: {hxx ixx txx cxx}{**} $libs testscript{**}
