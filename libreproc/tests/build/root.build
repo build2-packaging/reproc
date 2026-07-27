@@ -3,6 +3,16 @@ using c
 h{*}: extension = h
 c{*}: extension = c
 
+# MSVC UCRT: silence CRT insecure-API deprecations (fopen, etc).
+#
+if ($c.target.system == 'win32-msvc')
+  c.poptions += -D_CRT_SECURE_NO_WARNINGS
+
+# MinGW: enable %zu etc. (upstream reproc_test / assert.h).
+#
+if ($c.target.system == 'mingw32')
+  c.poptions += -D__USE_MINGW_ANSI_STDIO=1
+
 # Every exe{} in this subproject is by default a test.
 #
 exe{*}: test = true

@@ -1,0 +1,35 @@
+import libs = libreproc%lib{reproc}
+
+include ../resources/
+
+# Arguments forwarded to child processes (see common.testscript / env.testscript).
+#
+if ($c.target.class == 'windows')
+  example_args = [strings] cmd /c echo hello
+else
+  example_args = [strings] echo hello
+
+# env takes KEY=VAL extras (upstream: ARGS PROJECT=REPROC).
+#
+example_env_args = [strings] PROJECT=REPROC
+
+for t: c{* -env -path}
+{
+  n = $name($t)
+  ./: exe{example-$n}: $t h{**} $libs testscript{common}
+}
+
+# path writes reproc.out (cleaned up in path.testscript).
+#
+./: exe{example-path}: c{path} h{**} $libs testscript{path}
+
+# env spawns tests/resources/exe{env} under RESOURCE_DIRECTORY.
+#
+resource_dir = $posix_string([dir_path] $out_root/resources)
+
+./: exe{example-env}: c{env} h{**} $libs testscript{env}
+{
+  c.poptions += "-DRESOURCE_DIRECTORY=\"$resource_dir\""
+}
+
+testscript{env}@./: ../resources/exe{env}

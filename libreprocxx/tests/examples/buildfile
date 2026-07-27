@@ -1,0 +1,14 @@
+import libs = libreprocxx%lib{reproc++}
+
+# Arguments forwarded to child processes (see common.testscript).
+#
+if ($cxx.target.class == 'windows')
+  example_args = [strings] cmd /c echo hello
+else
+  example_args = [strings] echo hello
+
+for t: cxx{*}
+{
+  n = $name($t)
+  ./: exe{example-$n}: $t {hxx ixx txx}{**} $libs testscript{common}
+}

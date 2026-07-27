@@ -1,0 +1,31 @@
+import libs = libreproc%lib{reproc}
+
+include ../resources/
+
+# RESOURCE_DIRECTORY is this configuration's resources/ out directory
+# ($out_root is the tests project out, correct for out-of-source and
+# test-installed).
+#
+resource_dir = $posix_string([dir_path] $out_root/resources)
+
+# All unit tests except fork (POSIX-only, no resource binary).
+# h{**} keeps local assert.h in the dist (quoted #include "assert.h").
+#
+for t: c{* -fork}
+{
+  n = $name($t)
+
+  ./: exe{test-$n}: $t h{**} $libs testscript{common}
+  {
+    c.poptions += "-DRESOURCE_DIRECTORY=\"$resource_dir\""
+  }
+
+  # Resource binary spawned by the unit tests under RESOURCE_DIRECTORY.
+  #
+  testscript{common}@./: ../resources/exe{$n}
+}
+
+# fork uses reproc_options.fork (not available on Windows).
+#
+./: exe{test-fork}: include = ($c.target.class != 'windows')
+exe{test-fork}: c{fork} h{**} $libs testscript{common}

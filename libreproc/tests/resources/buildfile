@@ -1,0 +1,16 @@
+# Small programs spawned as child processes by unit tests and by the env
+# example. Not installed.
+#
+# Upstream builds each resources/<name>.c into a resources/ output directory
+# and passes -DRESOURCE_DIRECTORY=<that-dir> to consumers.
+#
+
+# Not smoke tests: fixtures only.
+#
+exe{*}: test = false
+
+for t: c{*}
+{
+  n = $name($t)
+  ./: exe{$n}: $t h{**}
+}

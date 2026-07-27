@@ -1,0 +1,5 @@
+: basics
+:
+$* >>EOO 2>:'' == 0
+hello
+EOO
