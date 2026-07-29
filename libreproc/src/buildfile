@@ -17,12 +17,12 @@ lib{reproc}: $pub/{$pub_hdrs}
 # Multi-dot names (clock.posix.c) need the ... form so build2 does not treat
 # .posix as the file extension.
 #
-lib{reproc}: reproc/{h c}{** -*.windows... -*.posix...} $impl_libs $intf_libs
+lib{reproc}: {h c}{** -*.windows... -*.posix...} $impl_libs $intf_libs
 
 # Platform-specific sources.
 #
-lib{reproc}: reproc/c{*.windows...}: include = ($c.target.class == 'windows')
-lib{reproc}: reproc/c{*.posix...}:   include = ($c.target.class != 'windows')
+lib{reproc}: c{*.windows...}: include = ($c.target.class == 'windows')
+lib{reproc}: c{*.posix...}:   include = ($c.target.class != 'windows')
 
 # Build options.
 #
