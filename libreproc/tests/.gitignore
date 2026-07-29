@@ -1,6 +1,12 @@
 # Test executables.
 #
 driver
+example-*
+
+resources/*
+!resources/buildfile
+!resources/*.c
+!resources/*.h
 
 # Testscript output directories (can be symlinks).
 #
