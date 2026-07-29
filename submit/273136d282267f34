@@ -1,0 +1,7 @@
+: 1
+name: libreprocxx
+version: 14.2.7+1
+language: c++
+project: reproc
+summary: C++11 wrapper for the reproc process library
+license: MIT; MIT License.
