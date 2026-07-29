@@ -1,6 +1,6 @@
 : 1
 name: libreprocxx
-version: 14.2.7-a.0.z
+version: 14.2.7
 language: c++
 project: reproc
 summary: C++11 wrapper for the reproc process library
