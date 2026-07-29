@@ -22,7 +22,7 @@ for t: c{* -fork}
 
   # Resource binary spawned by the unit tests under RESOURCE_DIRECTORY.
   #
-  testscript{common}@./: ../resources/exe{$n}
+  exe{test-$n}: ../resources/exe{$n}: include = adhoc
 }
 
 # fork uses reproc_options.fork (not available on Windows).

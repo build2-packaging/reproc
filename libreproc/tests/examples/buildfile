@@ -32,4 +32,4 @@ resource_dir = $posix_string([dir_path] $out_root/resources)
   c.poptions += "-DRESOURCE_DIRECTORY=\"$resource_dir\""
 }
 
-testscript{env}@./: ../resources/exe{env}
+exe{example-env}: ../resources/exe{env}: include = adhoc

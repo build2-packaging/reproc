@@ -1,6 +1,6 @@
 : 1
 name: libreproc
-version: 14.2.7
+version: 14.2.7+1
 language: c
 project: reproc
 summary: Cross-platform C99 process library
