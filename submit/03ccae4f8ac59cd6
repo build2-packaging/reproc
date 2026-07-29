@@ -1,0 +1,7 @@
+: 1
+name: libreproc
+version: 14.2.7
+language: c
+project: reproc
+summary: Cross-platform C99 process library
+license: MIT; MIT License.
